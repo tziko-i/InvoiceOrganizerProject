@@ -29,7 +29,8 @@ export class SidebarComponent {
   }
 
   logout() {
-    localStorage.removeItem('user');
+    console.log("Logging out & clearing localStorage...");
+    localStorage.clear(); // מחיקה טוטאלית של הטוקן וכל מידע הפרופיל והלוגאין
     this.router.navigate(['/login']);
   }
 }

@@ -41,16 +41,21 @@
     <!-- Actions placeholder if needed -->
 
     <div class="actions">
-
-       <p-button label="הורד דוח" icon="pi pi-download" styleClass="p-button-outlined"></p-button>
-
+       <p-button label="הורד דוח" icon="pi pi-download" styleClass="p-button-outlined" (onClick)="exportToExcel()"></p-button>
     </div>
 
   </div>
 
 
 
-  <div class="main-grid">
+  <div class="empty-state-card" *ngIf="!expenses || expenses.length === 0" style="text-align: center; padding: 4rem; background: rgba(255,255,255,0.8); border-radius: 12px; margin-top: 2rem;">
+    <i class="pi pi-receipt" style="font-size: 4rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+    <h2>ברוך הבא למערכת!</h2>
+    <p style="color: #64748b; margin-bottom: 2rem;">נראה שעדיין לא העלית חשבוניות למערכת. הוסף חשבונית חדשה ותן לנו להתחיל לנתח עבורך את הנתונים.</p>
+    <a routerLink="/upload" pButton label="העלאת חשבונית ראשונה" icon="pi pi-plus" class="p-button-rounded p-button-primary"></a>
+  </div>
+
+  <div class="main-grid" *ngIf="expenses && expenses.length > 0">
 
     <!-- Main Trend Chart -->
 

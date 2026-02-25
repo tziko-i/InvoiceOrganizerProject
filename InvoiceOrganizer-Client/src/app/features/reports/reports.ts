@@ -12,6 +12,8 @@ import { TableModule } from 'primeng/table';
 import { HttpClient } from '@angular/common/http';
 import { ChangeDetectorRef, inject } from '@angular/core';
 import { forkJoin } from 'rxjs';
+import * as ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-reports',
@@ -37,7 +39,8 @@ export class Reports implements OnInit {
   monthlyAverage = 0;
   topCategory = '-';
   savings = 0; // נשאיר כרגע סטטי או נחשב אם יש נתוני תקציב
-
+  
+  hasData = false; // Add flag to track if user has any invoices
 
   // Chart Data
   monthlyTrendData: any;
@@ -72,10 +75,17 @@ export class Reports implements OnInit {
     }).subscribe({
         next: (response) => {
             console.log('Reports Data:', response);
-            this.processKPIs(response.invoices, response.categorySummary);
-            this.updateMonthlyTrendChart(response.invoices);
-            this.updateCategoryChart(response.categorySummary);
-            this.updateTopVendorsChart(response.invoices);
+            
+            if (response.invoices && response.invoices.length > 0) {
+                this.hasData = true;
+                this.processKPIs(response.invoices, response.categorySummary);
+                this.updateMonthlyTrendChart(response.invoices);
+                this.updateCategoryChart(response.categorySummary);
+                this.updateTopVendorsChart(response.invoices);
+            } else {
+                this.hasData = false;
+            }
+            
             this.cd.detectChanges();
         },
         error: (err) => console.error("Error loading report data", err)
@@ -381,8 +391,42 @@ export class Reports implements OnInit {
   }
 
   exportToExcel() {
-    console.log('Exporting to Excel...');
-    // Implementation would use exceljs/file-saver here
+      // נבדוק האם יש לנו נתונים
+      // בדו"חות אין לנו array "expenses" נגיש באותה קלות, אלא אם נמפה מתוך categoryData, 
+      // אבל אפשר להשתמש במיפוי קטגוריות כדו"ח בסיסי עבור מסך הדוחות.
+      if (!this.categoryData || !this.categoryData.labels) {
+          alert('אין נתונים לייצוא');
+          return;
+      }
+  
+      const workbook = new ExcelJS.Workbook();
+      
+      // 1. גיליון קטגוריות
+      const worksheetCat = workbook.addWorksheet('סיכום קטגוריות');
+      worksheetCat.addRow(['קטגוריה', 'סכום כולל']);
+      worksheetCat.getRow(1).font = { bold: true };
+      
+      this.categoryData.labels.forEach((label: string, index: number) => {
+          worksheetCat.addRow([label, this.categoryData.datasets[0].data[index]]);
+      });
+      worksheetCat.columns.forEach(column => column.width = 20);
+
+      // 2. גיליון ספקים
+      if (this.topVendorsData && this.topVendorsData.labels) {
+          const worksheetVend = workbook.addWorksheet('הספקים המובילים');
+          worksheetVend.addRow(['ספק', 'הוצאה כוללת']);
+          worksheetVend.getRow(1).font = { bold: true };
+          
+          this.topVendorsData.labels.forEach((label: string, index: number) => {
+              worksheetVend.addRow([label, this.topVendorsData.datasets[0].data[index]]);
+          });
+          worksheetVend.columns.forEach(column => column.width = 20);
+      }
+  
+      workbook.xlsx.writeBuffer().then((data) => {
+          const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          FileSaver.saveAs(blob, `Reports_Summary_${new Date().getTime()}.xlsx`);
+      });
   }
 
   exportToPDF() {

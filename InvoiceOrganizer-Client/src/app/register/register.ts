@@ -16,6 +16,9 @@ export class RegisterComponent {
   private fb = inject(FormBuilder);
   private http = inject(HttpClient);
 
+  errorMessage: string = '';
+  successMessage: string = '';
+
   registerForm = this.fb.group({
     Username: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
@@ -23,14 +26,36 @@ export class RegisterComponent {
   });
 
   onSubmit() {
-    if(this.registerForm.valid) {
-        console.log('Registering...', this.registerForm.value);
-        this.http.post("http://localhost:5042/api/account/register", this.registerForm.value)
-        .subscribe((data:any) => {
-          let loggedUser = {username:data.username, token:data.token }
-          localStorage.setItem("user", JSON.stringify(loggedUser));
-          this.router.navigate(['/dashboard']);
-        })
+    this.errorMessage = '';
+    this.successMessage = '';
+
+    if (this.registerForm.invalid) {
+        this.errorMessage = 'אנא בדוק את הטופס, נראה שיש שדות חסרים או לא תקינים.';
+        this.registerForm.markAllAsTouched();
+        return;
     }
+
+    console.log('Registering...', this.registerForm.value);
+    this.http.post("http://localhost:5042/api/account/register", this.registerForm.value)
+    .subscribe({
+      next: (data:any) => {
+        this.successMessage = 'ההרשמה בוצעה בהצלחה! מועבר למערכת...';
+        let loggedUser = {username:data.username, token:data.token }
+        localStorage.setItem("user", JSON.stringify(loggedUser));
+        
+        // השהייה קטנה של שנייה כדי שהמשתמש יספיק לראות את הודעת ההצלחה
+        setTimeout(() => {
+            this.router.navigate(['/dashboard']);
+        }, 1500);
+      },
+      error: (err) => {
+        console.error("Registration error:", err);
+        if (err.error && typeof err.error === 'string') {
+          this.errorMessage = err.error;
+        } else {
+          this.errorMessage = 'שגיאה בהרשמה. ייתכן והאימייל כבר קיים במערכת.';
+        }
+      }
+    });
   }
 }

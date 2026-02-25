@@ -43,7 +43,16 @@ public class InvoicesController(AppDbContext db) : ControllerBase
         [FromQuery] DateOnly? toDate
     )
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
         var q = db.Invoices.AsNoTracking().Include(i => i.Supplier).AsQueryable();
+        
+        // Filter by the current user
+        if (!string.IsNullOrEmpty(userId))
+        {
+            q = q.Where(i => i.UserId == userId);
+        }
+
         if (supplierId.HasValue)
             q = q.Where(i => i.SupplierId == supplierId.Value);
 
@@ -181,9 +190,14 @@ public class InvoicesController(AppDbContext db) : ControllerBase
         [FromQuery] int? supplierId
     )
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var start = new DateOnly(year, 1, 1);
         var end = start.AddYears(1);
         var q = db.Invoices.AsNoTracking().Where(i => i.InvoiceDate >= start && i.InvoiceDate < end);
+        if (!string.IsNullOrEmpty(userId))
+        {
+            q = q.Where(i => i.UserId == userId);
+        }
         if (supplierId.HasValue)
             q = q.Where(i => i.SupplierId == supplierId.Value);
         var data = await q
@@ -206,10 +220,15 @@ public class InvoicesController(AppDbContext db) : ControllerBase
         [FromQuery, Range(1, 12)] int month
     )
     {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var start = new DateOnly(year, month, 1);
         var end = start.AddMonths(1);
 
         var q = db.Invoices.AsNoTracking().Where(i => i.InvoiceDate >= start && i.InvoiceDate < end);
+        if (!string.IsNullOrEmpty(userId))
+        {
+            q = q.Where(i => i.UserId == userId);
+        }
         var data = await q
             .GroupBy(i => i.SupplierId)
             .Select(g => new SupplierSummaryDto
@@ -251,7 +270,14 @@ public class InvoicesController(AppDbContext db) : ControllerBase
             if (from.HasValue) start = from.Value;
             if (to.HasValue) end = to.Value;
         }
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         var q = db.InvoiceItems.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            q = q.Where(ii => ii.Invoice != null && ii.Invoice.UserId == userId);
+        }
 
         if (supplierId.HasValue)
             q = q.Where(ii => ii.Invoice.SupplierId == supplierId.Value);

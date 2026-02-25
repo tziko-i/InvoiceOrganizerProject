@@ -15,6 +15,8 @@ import { ProgressBarModule } from 'primeng/progressbar';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextModule } from 'primeng/inputtext';
 import { HttpClient } from '@angular/common/http';
+import * as ExcelJS from 'exceljs';
+import * as FileSaver from 'file-saver';
 
 
   
@@ -174,11 +176,11 @@ export class DashboardComponent implements OnInit {
   initCharts() {
     // 1. הגדרת גרף מגמה עם קו כפול (הוצאות נוכחיות מול תקציב)
     this.expenseTrendChart = {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      labels: [], // Initial empty state
       datasets: [
         {
           label: 'הוצאות בפועל',
-          data: [42, 48, 41, 55, 48, 60],
+          data: [],
           fill: true,
           borderColor: '#f43f5e',
           backgroundColor: 'rgba(244, 63, 94, 0.1)',
@@ -187,7 +189,7 @@ export class DashboardComponent implements OnInit {
         },
         {
           label: 'תקציב יעד',
-          data: [45, 45, 45, 45, 45, 45],
+          data: [],
           fill: false,
           borderColor: '#64748b',
           borderDash: [5, 5], // קו מקווקו
@@ -209,10 +211,10 @@ export class DashboardComponent implements OnInit {
 
     // 2. גרף "חצי עוגה" (Semi-Doughnut) למראה מודרני
     this.categoryChart = {
-      labels: ['Marketing', 'IT', 'Offices', 'Others'],
+      labels: [],
       datasets: [
         {
-          data: [35, 25, 20, 20],
+          data: [],
           backgroundColor: ['#6366f1', '#f43f5e', '#f59e0b', '#10b981'],
           hoverOffset: 15,
           borderRadius: 10 // פינות מעוגלות בגרף העוגה
@@ -230,18 +232,55 @@ export class DashboardComponent implements OnInit {
     };
   }
 
-  getSeverity(status: string): any {
-    switch (status) {
-        case 'approved':
-            return 'success';
-        case 'pending':
-            return 'warning';
-        case 'rejected':
-            return 'danger';
-        default:
-            return 'info';
+    getSeverity(status: string): any {
+      switch (status) {
+          case 'approved':
+              return 'success';
+          case 'pending':
+              return 'warning';
+          case 'rejected':
+              return 'danger';
+          default:
+              return 'info';
+      }
     }
-  }
+
+    exportToExcel() {
+      if (!this.expenses || this.expenses.length === 0) {
+          alert('אין נתונים לייצוא');
+          return;
+      }
+  
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('הוצאות');
+  
+      // הוספת כותרת
+      worksheet.addRow(['מזהה', 'ספק', 'קטגוריה', 'תאריך', 'סכום', 'סטטוס']);
+      worksheet.getRow(1).font = { bold: true };
+  
+      // מיפוי הנתונים
+      this.expenses.forEach(exp => {
+          worksheet.addRow([
+              exp.id || '',
+              exp.vendor || '',
+              exp.category || '',
+              exp.date ? new Date(exp.date).toLocaleDateString('he-IL') : '',
+              exp.amount || 0,
+              exp.status || ''
+          ]);
+      });
+  
+      // עיצוב רוחב עמודות בסיסי
+      worksheet.columns.forEach(column => {
+          column.width = 15;
+      });
+  
+      // יצירת הקובץ והורדתו
+      workbook.xlsx.writeBuffer().then((data) => {
+          const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+          FileSaver.saveAs(blob, `Dashboard_Expenses_${new Date().getTime()}.xlsx`);
+      });
+    }
 }
 
 export interface Expense {
