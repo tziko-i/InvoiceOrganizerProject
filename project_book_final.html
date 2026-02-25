@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ספר פרויקט - InvoiceOrganizer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700&display=swap');
+        
+        :root {
+            --text-color: #2c3e50;
+            --heading-color: #1a252f;
+            --border-color: #bdc3c7;
+            --bg-color: #fce4ec; /* Optional light background for out-of-page area */
+            --page-bg: #ffffff;
+            --primary-blue: #2980b9;
+        }
+
+        body {
+            font-family: 'Assistant', Arial, sans-serif;
+            background-color: #ecf0f1;
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 25mm 20mm;
+            margin: 0 auto 30px auto;
+            background: var(--page-bg);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+
+        h1, h2, h3, h4 { color: var(--heading-color); font-weight: 700; }
+        
+        h1 { font-size: 28pt; text-align: center; margin-bottom: 20px; color: var(--primary-blue); border-bottom: 2px solid var(--primary-blue); padding-bottom: 10px;}
+        h2 { font-size: 18pt; margin-top: 30px; border-bottom: 1px solid var(--border-color); padding-bottom: 5px;}
+        h3 { font-size: 14pt; margin-top: 20px; color: var(--primary-blue); }
+        h4 { font-size: 12pt; margin-top: 15px; text-decoration: underline;}
+
+        p { font-size: 12pt; text-align: justify; margin-bottom: 15px; }
+        li { font-size: 12pt; margin-bottom: 8px; }
+
+        .cover-title { font-size: 36pt; font-weight: bold; text-align: center; margin-top: 100px; color: var(--primary-blue); }
+        .cover-subtitle { font-size: 20pt; text-align: center; margin-top: 20px; }
+        .cover-details { font-size: 16pt; margin-top: 150px; text-align: right; line-height: 2; padding-right: 50px;}
+
+        /* Table styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; margin-bottom: 20px;}
+        th, td { border: 1px solid var(--border-color); padding: 10px; text-align: right; }
+        th { background-color: #ecf0f1; font-weight: 600; }
+
+        .code-block {
+            direction: ltr;
+            text-align: left;
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10pt;
+            overflow-x: auto;
+            margin-bottom: 20px;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 15mm;
+            left: 20mm;
+            right: 20mm;
+            text-align: center;
+            font-size: 10pt;
+            color: #7f8c8d;
+            border-top: 1px solid var(--border-color);
+            padding-top: 10px;
+        }
+
+        @media print {
+            body { background: none; padding: 0; }
+            .page { margin: 0; box-shadow: none; border: none; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- דף ראשון: שער -->
+<div class="page">
+    <div class="cover-title">ספר פרויקט גמר</div>
+    <div class="cover-subtitle">InvoiceOrganizer - מערכת חכמה לניהול חשבוניות</div>
+    
+    <div class="cover-details">
+        <div><b>מוגש על ידי:</b> צבי קופלוביץ</div>
+        <div><b>מגמה:</b> הנדסת תוכנה</div>
+        <div><b>תאריך:</b> פברואר 2026</div>
+    </div>
+</div>
+
+<!-- דף שני: הצעת פרויקט -->
+<div class="page">
+    <h1>הצעת פרויקט</h1>
+    <p><b>שם הפרויקט:</b> InvoiceOrganizer</p>
+    <p><b>תיאור תמציתי:</b><br>
+    המערכת מהווה פלטפורמה אינטרנטית מקיפה לניהול, ארגון וניתוח של חשבוניות וקבלות עבור יחידים ועסקים קטנים. היא מאפשרת למשתמשים להעלות חשבוניות, לסווג אותן לקטגוריות ולספקים, ולצפות בניתוח ויזואלי של הוצאות לאורך זמן. המערכת כוללת לוח בקרה (Dashboard) דינמי, ניהול משתמשים בטוח, ויכולת ייצוא דוחות מתקדמים.</p>
+    
+    <p><b>מטרות עסקיות ויעדים:</b><br>
+    לייעל את המעקב הפיננסי באמצעות צמצום הצורך בתיוק ידני ויצירת מאגר דיגיטלי מאובטח ונגיש מכל מקום. מתן כלים להבנת 'לאן הולך הכסף' באמצעות ניתוחים סטטיסטיים ויזואליים.</p>
+    
+    <p><b>טכנולוגיות מרכזיות:</b><br>
+    צד לקוח מבוסס Angular 21 עם ממשק PrimeNG, צד שרת מבוסס ASP.NET Core 9 (Web API), ומסד נתונים Entity Framework Core מעל SQLite.</p>
+</div>
+
+<!-- דף שלישי - 1.3 תכולת הפרויקט (חלק א) -->
+<div class="page">
+    <h1>1.3 תכולת הפרויקט</h1>
+    
+    <h2>1.3.1 תאור ורקע כללי</h2>
+    <p>ניהול פיננסי תקין מחייב מעקב רציף אחר הוצאות. קבלות וחשבוניות נצברות בקצב מהיר, לרוב בצורה לא מסודרת (נייר, מיילים, תמונות בטלפון). הפיזור הזה מקשה על עריכת תקציב, הגשת דוחות מס ואיתור כשלים פיננסיים. פרויקט InvoiceOrganizer בא לתת מענה טכנולוגי מתקדם לבעיה זו על ידי הפיכת הניירת הקשיחה והמפוזרת למסד נתונים דיגיטלי מרכזי הניתן לניתוח מהיר ונוח.</p>
+
+    <h2>1.3.2 מטרות המערכת</h2>
+    <ul>
+        <li><b>ריכוז מידע:</b> יצירת מאגר מרכזי, בטוח ומאורגן לכל מסמכי הרכישה.</li>
+        <li><b>מניעת אובדן נתונים:</b> הבטחת נגישות למסמכי הוכחת קנייה (אחריות חומרה, החזרות) לאורך זמן.</li>
+        <li><b>ניתוח עסקי ופרטי (BI):</b> סיפוק כלים ויזואליים להבנה פשוטה של דפוסי ההוצאה החודשיים והשנתיים חלוקה לקטגוריות.</li>
+        <li><b>נגישות:</b> בניית מערכת מבוססת ענן המאפשרת גישה, העלאה ועריכה מכל דפדפן ומכשיר נייד בצורת (Responsive UI).</li>
+    </ul>
+
+    <h2>1.3.3 סקירת מצב קיים בשוק, אלו בעיות קיימות</h2>
+    <p>כיום, הגישות הרווחות בשוק מתחלקות לכמה סוגים:</p>
+    <ul>
+        <li><b>תיוק קלסרים מסורתי:</b> גישה מיושנת הדורשת זמן רב, מקום אחסון, חשופה לבלייה ואינה מאפשרת חיפוש.</li>
+        <li><b>שמירה בכונן/ענן (Google Drive/Dropbox):</b> הניירת אמנם דיגיטלית, אך עדיין חסרה היכולת לשאוב את הנתונים לצורך ציפייה בגרפים ומעקב תקציבי אוטומטי.</li>
+        <li><b>מערכות עסקיות כבדות (ERP/חשבשבת/פריוריטי):</b> מערכות מעולות אך יקרות, מסורבלות מאוד למשתמש הביתי או לעסק הזעיר הלא-מיומן.</li>
+    </ul>
+
+    <h2>1.3.4 מה הפרויקט אמור לחדש או לשפר</h2>
+    <p>המערכת מציעה פתרון הוליסטי ופשוט ללקוח הקצה. היא מחברת בין עולם האחסון לעולם האנליטיקה. פרויקט InvoiceOrganizer משפר דרמטית את חווית המשתמש (UX) עיצוב Modern Bright, מספק לוחות בקרה מהירים המקבלים נתונים חיים (Real-Time charts), ומשלב טכנולוגיות צד-שרת חזקות (.NET 9) ועדכניות בצורה כזו שגם המשתמש הכי פשוט יוכל לנהל את הוצאותיו כאילו מדובר בחברה עסקית מתקדמת.</p>
+</div>
+
+<!-- דף רביעי - דרישות ובעיות -->
+<div class="page">
+    <h2>1.3.5 דרישות מערכת ופונקציונליות</h2>
+    <h3>1.3.5.1 דרישות מערכת</h3>
+    <p><b>סביבת דפדפן:</b> תמיכה בדפדפנים מודרניים (Chrome, Edge, Safari, Firefox).<br>
+    <b>שרידות וביצועים:</b> המערכת צריכה להחזיר תשובה תוך שניות בודדות גם בטעינת מאות רשומות, תוך שימוש במנגנוני Lazy Loading ו-Pagination בצד לקוח (Angular Table) ובחיתוכים בסיס מסד נתונים.<br>
+    <b>התמודדות עם עומסים:</b> תשתית השרת ASP.NET Core מיועדת לעבד בקשות מרובות במקביל (Asynchronous Controller Actions) כולל עיבוד קבצים במבני Multipart/form-data.</p>
+    
+    <h3>1.3.5.2 דרישות פונקציונליות</h3>
+    <ul>
+        <li><b>מודול משתמשים:</b> אפשרות להרשמה (Registration), התחברות (Login) וניהול Session מבוסס Token.</li>
+        <li><b>מודול מסמכים:</b> העלאת תמונות ו-PDF של חשבוניות. אפשרות להזנת פרטי החשבונית: מס', תאריך, ספק, סכום.</li>
+        <li><b>לוח בקרה אינטראקטיבי:</b> הצגת גרף מגמות חודשי, תרשים פיזור הוצאות לקטגוריות ורשימת ספקים מרכזיים.</li>
+        <li><b>רשימות תומכות:</b> ניהול עצמאי של רשימת קטגוריות (למשל: דלק, מזון, ציוד משרדי) וניהול רשימת ספקים לצורך שיוך מהיר בחשבונית חדשה.</li>
+    </ul>
+
+    <h2>1.3.6 בעיות צפויות במהלך הפיתוח ופתרונות</h2>
+    <h3>1.3.6.1 תיאור הבעיות</h3>
+    <ul>
+        <li><b>בעיית אינטגרציה מעגלית במידע:</b> בשימוש ב-Entity Framework, אובייקטים המקושרים תלותית (למשל, חשבונית שמכילה פריטים שהם בתורם מקושרים חזרה לחשבונית) יוצרים Reference Cycles בהחזרת JSON, מה שגורם לקריסת הבקשה.</li>
+        <li><b>תאימות צד-לקוח למסכים:</b> תצוגת טבלאות נתונים ארוכות וגרפים במכשירי סלולר נוטה "להישבר" ולחרוג מרוחב המסך.</li>
+        <li><b>בעיות תמיכה בעברית מול שרתות בסיס נתונים:</b> התמודדות עם תאריכים מיון וכיוון כתיבה עברי (RTL) ביישום.</li>
+    </ul>
+
+    <h3>1.3.6.2 פתרונות אפשריים</h3>
+    <ul>
+        <li><b>פתרון מעגליות:</b> הוספת הקונפיגורציה <code>ReferenceHandler.IgnoreCycles</code> בהגדרות השירותים (Program.cs) למניעת קריסה.</li>
+        <li><b>פתרון תאימות רספונסיבית:</b> שימוש במערכת הרשת המובנית (Grid System) של PrimeNG לצד שאילתות CSS (@media queries) שמתאימות את הסרגל האנכי לתצורת תפריט נייד.</li>
+        <li><b>פתרון תאימות נתוני זמנים ושפה:</b> קביעת מבני נתונים (DateOnly / DateTimeUtc) במקום סתם מחרוזות, ואכיפת סידור מיון (OrderByDescending) בשרת ולא בלקוח.</li>
+    </ul>
+</div>
+
+<!-- דף חמישי - פתרון טכנולוגי -->
+<div class="page">
+    <h2>1.3.7 פתרון טכנולוגי נבחר</h2>
+    <h3>1.3.7.1 טופולוגית הפתרון</h3>
+    <p>המערכת בנויה בארכיטקטורת שרת-לקוח (Client-Server Architecture) קלאסית. צד הלקוח (Frontend) רץ בדפדפן של המשתמש ומתקשר עם צד השרת (Backend) באמצעות קריאות HTTP מאובטחות (REST API) על גבי פרוטוקול TCP/IP. השרת אחראי לניהול הלוגיקה העסקית, התקשורת מול בסיס הנתונים (Database) המקומי, והתקשורת ל-APIs חיצוניים.</p>
+
+    <h3>1.3.7.2 טכנולוגיות בשימוש</h3>
+    <p>בפרויקט שולבו טכנולוגיות מודרניות ליצירת אפליקציה מהירה ואמינה (SPA - Single Page Application):<br>
+    <b>Frontend:</b> Angular בגרסה 21 (המשתמשת ביכולות Standalone Components לטעינה מהירה), ספריית PrimeNG לניהול רכיבי הממשק (UI Components).<br>
+    <b>Backend:</b> ASP.NET Core בגרסה 9.0 הפועל כ-Web API.<br>
+    <b>Database:</b> SQLite כאמצעי קל ומהיר לאחסון נתונים (Relational DB) המיועד לפיתוח ופריסה פשוטה.</p>
+
+    <h3>1.3.7.3 שפות הפיתוח</h3>
+    <ul>
+        <li><b>צד לקוח:</b> HTML5, CSS3, TypeScript (השפה המרכזית ב-Angular).</li>
+        <li><b>צד שרת:</b> C# (גרסה 12/13).</li>
+        <li><b>מסד נתונים:</b> SQL (הלכה למעשה, מתורגם אוטומטית מקוד גישה מונחה-עצמים - Entity Framework LINQ).</li>
+    </ul>
+
+    <h3>1.3.7.4 תיאור הארכיטקטורה</h3>
+    <p>ארכיטקטורת שכבות (N-Tier Architecture) בשרת:<br>
+    <b>שכבת התצוגה (Controllers):</b> מקבלת את בקשות ה-HTTP, מבצעת Data Validation בסיסי (Model Binding).<br>
+    <b>שכבת הלוגיקה העסקית (Services):</b> מבצעת את החישובים, עיבוד התמונות ויצירת הטוקנים (JWT).<br>
+    <b>שכבת הנתונים (Data Access / Repository):</b> שימוש ב-Entity Framework Core לצורך מיפוי (ORM) וביצוע פעולות CRUD מול מסד הנתונים, מה שמנתק את רוב שורת הקוד מצורך בשאילתות SQL ארוכות.</p>
+
+    <h3>1.3.7.5 חלוקה לתכניות ומודולים</h3>
+    <p><b>מודול לקוח (Client App):</b> מחולק לפי תכונות – Auth (התחברות ורישום), Dashboard (ניהול תקציב, גרפים), Invoices (העלאת קבצים, טבלאות נתונים), Reports (הורדת דוחות אקסל).<br>
+    <b>מודול שרת (API):</b> מחולק ל-Controllers שונים: AuthController, InvoicesController, ReportsController, UsersController.</p>
+
+    <h3>1.3.7.6 סביבת השרת( מקומי, וירטואלי, ענן, שירות אירוח)</h3>
+    <p>סביבת השרת היא Hosting מקומי (Kestrel) בתוך סביבת Windows במהלך הפיתוח. לקראת ייצור, היישום תוכנן לפעול על שרת צד-שלישי תומך .NET Runtime (כגון Azure App Service או שרת וירטואלי מבוסס Linux בעזרת תהליך Reverse Proxy). הנתונים נשמרים מקומית בקובץ ".db" בנתיב השרת.</p>
+
+    <h3>1.3.7.7 ממשק המשתמש/לקוח GUI</h3>
+    <p>הממשק עבר עיצוב קפדני ומוקפד, מהסגנונות הכי עדכניים של "Modern Bright".<br>
+    שימוש בספריית ה-UI של PrimeNG מאפשר רכיבים מוכנים כגון טבלאות עם מיון וסינון, גרפים (באמצעות Chart.js), כפתורים מדורגים, ואלמנטים קופצים (Modals) תוך חיסכון ניכר בזמן פיתוח ושמירה על קוד גמיש.</p>
+
+    <h3>1.3.7.8 ממשקים למערכות אחרות API</h3>
+    <p>נכון לגרסה הנוכחית, המערכת מתקשרת בעיקר כ-API עצמאי (First-Party API). בתוכניות ההרחבה שולבו יכולות התממשקות ל-Azure Document Intelligence (לצורך סריקת OCR אוטומטית מחשבוניות במייל) ומול דרישות צד שלישי לשליחת מיילים אוטומטיים (Resend).</p>
+
+    <h3>1.3.7.9 שימוש בחבילות תוכנה</h3>
+    <p><b>צד לקוח (Node Package Manager - NPM):</b> rxjs, primeng, chart.js.<br>
+    <b>צד שרת (NuGet Packages):</b> Microsoft.EntityFrameworkCore, System.IdentityModel.Tokens.Jwt, BCrypt.Net-Next (להצפנת סיסמאות), Microsoft.AspNetCore.Authentication.JwtBearer.</p>
+</div>
+
+<!-- דף שישי - מבנה נתונים ותרשימים -->
+<div class="page">
+    <h2>1.3.8 שימוש במבני נתונים וארגון קבצים</h2>
+    <h3>1.3.8.1 פרוט מבנה הנתונים</h3>
+    <p><b>טבלת Users:</b> מכילה את קוד המשתמש, אימייל, סיסמה מוצפנת (Hash), ותאריך הצטרפות.<br>
+    <b>טבלת Categories:</b> לוח קטגוריות לסיווג הוצאה (מזון, דיור וכו').<br>
+    <b>טבלת Suppliers:</b> רשימת הספקים, כתובותיהם ומזהה הקטגוריה השייך להם כברירת מחדל.<br>
+    <b>טבלת Invoices:</b> טבלת הליבה האוגרת - מספר חשבונית (InvoiceNumber), תאריך, סך העסקה, נתיב פיזי של קובץ התמונה (FilePath), ומזהה הספק.<br>
+    <b>טבלת InvoiceItems:</b> לניהול רמת הפריט בכל חשבונית – מזהה חשבונית, תיאור פריט, מחיר ליחידה, וכמות.</p>
+
+    <h3>1.3.8.2 שיטת האחסון( מאגר, קבצים ובאיזה טכנולוגיה)</h3>
+    <p><b>מאגר טבלאי:</b> שימוש בבסיס נתונים יחסי מסוג SQLite המעניק גישה מהירה לשמירת שלמות המידע (Referential Integrity).<br>
+    <b>קבצים:</b> תמונות וחשבוניות שמועלות (PDF/JPG) נשמרות פיזית בתיקיית <i>Uploads</i> בשרת. בסיס הנתונים מחזיק רק נתיב לקובץ (מניעת התנפחות מסד הנתונים).</p>
+
+    <h3>1.3.8.3 מנגנוני התאוששות מנפילה\קריסה\תמיכה בטראנזקציות</h3>
+    <p>המערכת מבססת Transactional Operations בעזרת ה-Entity Framework. במקרים בהם מוחדר מידע משולב (כגון חשבונית חדשה יחד עם שורות פריטים), במקרה של שגיאה באמצע התהליך מתבצע Rollback אוטומטי לשמירה על עקביות הנתונים.</p>
+
+    <h2>1.3.9 תרשימי מערכת מרכזיים</h2>
+    <h3>1.3.9.1 Use Case</h3>
+    <p>תרחיש מרכזי (Create Invoice):<br>
+    הלקוח מתחבר למערכת -> מנווט לעמוד הוספת חשבונית -> הלקוח אקטורי מעלה קובץ ומזין סכום -> המערכת מעבדת את הנתונים -> המערכת שולחת אישור סטטוס ללקוח, ומציגה הודעת הצלחה.</p>
+
+    <h3>1.3.9.2 Sequence diagram - רצף קריאות פונקציות מרכזיות</h3>
+    <p>זרימת התקשורת בקריאת נתונים סטטיסטיים ללוח הבקרה:<br>
+    [לקוח-אנגולר] -> קורא לפונקציית HttpClient.get -> [שרת API] Controllers מקבל בקשה -> מופעל מנגנון ה-TokenValidation -> קריאה ל-Service -> קריאה ל-DbContext ושאיבת מידע מסונן דרך LINQ -> החזרת אובייקט DTO דרך JSON -> ה-Frontend קולט את ה-JSON, ממפה אותו לסדרת נתונים (Arrays) ומזין ל-Chart.js להצגה.</p>
+
+    <h3>1.3.9.3 Data flow</h3>
+    <p>זרימת המידע מההזנה ועד הייצוג הוויזואלי:<br>
+    קלט משתמש (טופס רישום חשבונית) --> הופך ל-Object JSON --> נשלח ב-HTTP POST לשרת --> מתורגם שם לאובייקט Invoice דרך ModelBinder --> נשמר לשורת נתונים יחסית ב-SQLite. בעת צורך בניתוח --> השרת אוסף חיתוכים מ-SQLite באמצעות שאילתות GroupBy --> מפיק רשומות Summary --> עובר ללקוח.</p>
+
+    <h2>1.3.10 תיאור המרכיב האלגוריתמי חישובי</h2>
+    <h3>1.3.10.1 איזה בעיה בא לפתור, איך יפתור?</h3>
+    <p><b>הבעיה:</b> משתמשים רוצים לדעת מיד את דפוסי ההוצאה החודשיים, התפלגות הקטגוריות והספקי-קצה שמושכים את מרב ההוצאות, מבלי לחשב הכל ידנית כל פעם.<br>
+    <b>הפתרון:</b> בקרת ה-Reports מחזיקה אלגוריתמיקה שמבצעת אגרגציה סטטיסטית. בשרת מתבצע תהליך חיתוך, איסוף וכימות אוטומטי של חשבוניות הלקוח על סמך זמנים. סכימה סלקטיבית זו חוסכת התחשבנויות מורכבות במחשב הלקוח.</p>
+
+    <h3>1.3.10.2 איסוף מידע וניתוחים סטטיסטיים</h3>
+    <p>המערכת אוספת בזמן אמת עשרות שורות נתונים גולמיים ממסד הנתונים. בעזרת הפונקציונליות <code>GroupBy</code> ו-<code>Sum</code>, מיוצר מיפוי שמציג באיזו קטגוריה ההוצאות חריגות, מה הממוצע החודשי מול הוצאה נוכחית, ועד כמה העסק\אדם קרוב לחריגת יעד.</p>
+</div>
+
+<!-- דף שביעי - אבטחה, משאבים וניהול -->
+<div class="page">
+    <h2>1.3.11 תיאור/התייחסות לנושאי אבטחת מידע</h2>
+    <p>המערכת מתמודדת עם מידע פיננסי רגיש הדורש רמת אבטחה טובה. מנגנוני ההגנה מבוססים על הטכנולוגיות הבאות:</p>
+    <ul>
+        <li><b>הגנת זהות:</b> סיסמאות משתמשים אינן נשמרות כטקסט גלוי אלא עוברות תהליך גיבוב קריפטוגרפי עמוק (Hashing + Salt) בעזרת חבילת BCrypt.</li>
+        <li><b>בקרת גישה למשאבים:</b> מעבר בין שכבות דורש אימות זהות. השרת מנפיק Json Web Token (JWT) בעל תוקף מוגבל. כל בקשה לשרת נדרשת להציג טוקן תקין (Bearer Auth) המאומת ברמת ה-Middleware ב-ASP.NET Core. מנגנון זה מונע גישה ממי שאינו מורשה.</li>
+        <li><b>הגנה מפני התקפות Web:</b> הספרייה עצמה (Angular) מגנה מפני הזרקות (XSS) על ידי Sanitization מובנה, והשרת מוגדר לדחות קריאות Cross-Origin חריגות (CORS Policy).</li>
+    </ul>
+
+    <h2>1.3.12 משאבים הנדרשים לפרויקט</h2>
+    <h3>1.3.12.1 מס' שעות המוקדש לפרויקט, חלוקת עבודה</h3>
+    <p>סך הכל הוגדרו כ-300 שעות עבודה על הפרויקט החל משלב האפיון ועד להגשה, שבוצעו על ידי מפתח יחיד (צבי קופלוביץ), תוך שילוב עבודה מול המנחה לקבלת פידבק טכני ועיצובי.</p>
+
+    <h3>1.3.12.2 ציוד נדרש</h3>
+    <p>עמדת מחשב חזקה (מעבד i5/i7, 16GB RAM) המריצה שרת אינטרנט מקומי לפיתוח בסביבת Windows.</p>
+
+    <h3>1.3.12.3 תוכנות נדרשות</h3>
+    <ul>
+        <li>סביבת פיתוח: Visual Studio 2022 (לשרת) ו-Visual Studio Code (ללקוח).</li>
+        <li>ניהול גרסאות: Git תחת GitHub.</li>
+        <li>כלי בדיקה: Postman (בדיקת API), תוכנת צד שלישי לפרופיילינג SQL.</li>
+    </ul>
+
+    <h3>1.3.12.4 ידע חדש שנדרש ללמוד</h3>
+    <p>העמקה בארכיטקטורת Angular 21 (Signals, Standalone components), הטמעת סינון Token ברמת API בסביבת .NET Core 9, ולימוד ספריות עיצוב מתקדמות (PrimeNG ו-Chart.js).</p>
+
+    <h3>1.3.12.5 ספרות ומקורות מידע</h3>
+    <p>תיעוד רשמי באתרי Microsoft (learn.microsoft.com), Angular Docs (angular.dev), יחד עם קהילת מפתחי הקוד הפתוח לפתרון באגים נקודתיים במבנה הנתונים.</p>
+</div>
+
+<!-- דף שמיני - תהליכי סיום ובדיקה -->
+<div class="page">
+    <h2>1.3.13 תכנית עבודה ושלבים למימוש הפרויקט</h2>
+    <p>העבודה בוצעה בגלים (Sprints):<br>
+    <b>שלב 1 (אפיון):</b> עיצוב מסכי הלקוח ותכנון בסיס הנתונים.<br>
+    <b>שלב 2 (הקמת השרת):</b> בניית ה-Models וה-Controllers הבסיסיים להזנת נתונים ולהחזרתם למול SQLite.<br>
+    <b>שלב 3 (חיבור Angular):</b> פיתוח המסכים והטפסים, וחיבור הקריאות ברשת (HTTPClient) מול הבקר בשרת.<br>
+    <b>שלב 4 (אלגוריתמיקה ולוגיקה):</b> בניית שירותי הסטטיסטיקה ללוח הבקרה והדוחות השונים לעיבוד אנליטי.<br>
+    <b>שלב 5 (השלמות אינטגרציה):</b> הוספת אימות סיסמאות ו-Tokens, פריסת חבילות האבטחה, כתיבת הספר והכנה להגנה.</p>
+
+    <h2>1.3.14 תכנון הבדיקות שיבוצעו</h2>
+    <h3>1.3.14.1 בדיקות תהליכיות ברמת משתמש (Full Flow)</h3>
+    <p><b>תרחיש בדיקה מרכזי:</b> המשתמש רושם פרופיל חדש, מתחבר עם שם המשתמש, מקבל הרשאה ועובר לעמוד לוח הבקרה. הוא מנווט להוספת חשבונית ומעלה קובץ, המערכת מחזירה סטטוס "הועלה בהצלחה", הגרף התקציבי בלוח הבקרה קופץ חזותית בצורה מיידית לפי הסכום הנדרש.<br>
+    <b>תרחיש בדיקה חריג:</b> הזנת סיסמה שגויה או טוקן שפג תוקפו יגרמו לדחיית הלקוח ולגירושו ישירות למסך ההתחברות תוך פליטת הודעת שגיאה חלקה שלא תגרום לקריסת הבק-אנד.</p>
+
+    <h3>1.3.14.2 בדיקות יחידה (Unit Tests)</h3>
+    <p>סדרת קריאות עצמאיות לבדיקת ה-API מנותק מסביבת ה-GUI (בד"כ ע"י Postman או פונקציות Mocha). למשל, שליחת בקשת GET לטיפול בראוט של הדוחות ללא הזנת Token מתאימה - צריכה להחזיר תגובה כירורגית HttpCode 401 Unauthorized.</p>
+
+    <h2>1.3.15 בקרת גרסאות version control</h2>
+    <p>הפרויקט מנוהל במערכת Git ומגובה לענן ב-GitHub. נשמרות גרסאות לפי נקודות ציון היסטוריות (Commits). מתבצע שימוש בענף Master ליציבות הפרויקט, וכאשר משולב פיצ'ר חדש כמו הרחבה של דו"ח Excel, כל התיקונים צפויים לחזור לענף הראשי מה שהופך את שחזור הקוד לבטוח בעת כל קריסה פיזית בכונן שרת העבודה.</p>
+</div>
+
+<!-- דף תשיעי - נספחים: קוד -->
+<div class="page">
+    <h2>נספחים - קוד המערכת</h2>
+    <p>להלן קטעי קוד נבחרים מתוך ליבת המערכת המבצעים את הפעולות הכי מרכזיות:</p>
+    
+    <h4>1. חישוב סטטיסטי ושליפת נתונים - חיתוך ופילוח (InvoicesController.cs)</h4>
+    <div class="code-block">
+[HttpGet("summary/by-category")]
+public async Task&lt;ActionResult&lt;IEnumerable&lt;CategorySummaryDto&gt;&gt;&gt; GetCategorySummary()
+{
+    // זיהוי המשתמש מתוך הטוקן המוזרק ל-Http Context
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+    // הרצת שאילתת LINQ יחד עם קיבוץ לפי קטגוריות
+    var summary = await _context.Invoices
+        .Where(i =&gt; i.UserId == userId)
+        .Include(i =&gt; i.Supplier)
+        .ThenInclude(s =&gt; s.DefaultCategory)
+        .GroupBy(i =&gt; i.Supplier.DefaultCategory)
+        .Select(g =&gt; new CategorySummaryDto
+        {
+            CategoryId = g.Key != null ? g.Key.Id : 0,
+            CategoryName = g.Key != null ? g.Key.Name : "אחר",
+            Total = g.Sum(i =&gt; i.Total),
+            Count = g.Count()
+        })
+        .ToListAsync();
+
+    return summary;
+}
+    </div>
+
+    <h4>2. הבטחת בטיחות: מחולל ומצפין תעודת אימות (TokenService.cs)</h4>
+    <div class="code-block">
+public string CreateToken(Users user)
+{
+    // הוצאת מפתח ממסמך הקינפוג והמרתו לביטים
+    var tokenKey = config["TokenKey"];
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
+
+    // יצירת מטען Claims חיוניים 
+    var claims = new List&lt;Claim&gt;
+    {
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.NameIdentifier, user.Id)
+    };
+
+    // הגדרת חתימה אלגוריתמית
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(claims),
+        Expires = DateTime.UtcNow.AddDays(7), // תוקף פג
+        SigningCredentials = creds
+    };
+    
+    // יצירת הטוקן ומשלוח כטקסט החוצה
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return tokenHandler.WriteToken(token);
+}
+    </div>
+
+    <h4>3. משיכת נתונים מהשרת (מקבילית) בצירוף טוקן (Dashboard.ts)</h4>
+    <div class="code-block">
+initMockData() {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return;
+    const loggedUser = JSON.parse(userStr);
+    
+    // הכנת הטוקן המזהה לבקשת השרת 
+    const headers = { 'Authorization': `Bearer ${loggedUser.token}` };
+
+    // ביצוע שתי קריאות במקביל לרשת
+    forkJoin({
+        invoices: this.http.get&lt;any[]&gt;("api/Invoices", { headers }),
+        categorySummary: this.http.get&lt;any[]&gt;("api/Invoices/summary/by-category", { headers })
+    }).subscribe({
+        next: (response) =&gt; {
+            // 1. מיפוי ועדכון הטבלה מהחשבוניות
+            this.expenses = response.invoices.map(inv =&gt; ({
+                id: inv.id, 
+                vendor: inv.vendorName || inv.supplier?.name || 'ספק כללי',
+                amount: inv.total,
+                status: inv.status || 'pending'
+            }));
+
+            // 2. עיבוד הפריטים עבור גרף הקטגוריות
+            this.processCategoryData(response.categorySummary);
+            
+            // 3. עדכון גרף המגמה 
+            this.updateTrendChart(response.invoices);
+        },
+        error: (err) =&gt; console.error("שגיאה בטעינת נתונים", err)
+    });
+}
+    </div>
+
+    <h4>4. ניהול דוחות גרפי בלקוח (Reports.ts)</h4>
+    <div class="code-block">
+updateTopVendorsChart(invoices: any[]) {
+    // מילון עבור קיבוץ לפי שם ספק אוטומטי
+    const vendorMap = new Map&lt;string, number&gt;();
+    
+    invoices.forEach(inv =&gt; {
+        const vendorName = inv.vendorName || inv.supplier?.name || 'Unknown';
+        const current = vendorMap.get(vendorName) || 0;
+        vendorMap.set(vendorName, current + (inv.total || 0));
+    });
+
+    // המרה למערך ומיון לקבלת "טופ 5 המבזבזים הכי גדולים"
+    const sortedVendors = Array.from(vendorMap.entries())
+        .sort((a, b) =&gt; b[1] - a[1]) // מיון יורד מגבוה לנמוך
+        .slice(0, 5); 
+
+    const labels = sortedVendors.map(v =&gt; v[0]);
+    const data = sortedVendors.map(v =&gt; v[1]);
+
+    // דיחצת הנתונים למודל ה-Data של תרשים Chart.js
+    this.topVendorsData = {
+        ...this.topVendorsData,
+        labels: labels,
+        datasets: [{
+            ...this.topVendorsData.datasets[0],
+            data: data
+        }]
+    };
+}
+    </div>
+</div>
+
+</body>
+</html>
