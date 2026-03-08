@@ -8,6 +8,9 @@ using API.DTOs;
 using Microsoft.EntityFrameworkCore;
 using API.Interfaces;
 using API.Extensions;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 namespace API.Controllers;
 
 [ApiController]
@@ -47,6 +50,40 @@ public class AccountController(AppDbContext context, ITokenService tokenService)
         return user.ToDto(tokenService);
 
     }
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<ActionResult<UserDto>> GetProfile()
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var user = await context.Users.FindAsync(userId);
+        if (user == null) return NotFound();
+
+        return user.ToDto(tokenService);
+    }
+
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<ActionResult<UserDto>> UpdateProfile(UserUpdateDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var user = await context.Users.FindAsync(userId);
+        if (user == null) return NotFound();
+
+        user.FullName = dto.FullName ?? "";
+        user.Email = dto.Email ?? user.Email;
+        user.Phone = dto.Phone ?? "";
+        user.Address = dto.Address ?? "";
+
+        await context.SaveChangesAsync();
+
+        return user.ToDto(tokenService);
+    }
+
     private async Task<bool> EmailExists(string email)
     {
         return await context.Users.AnyAsync(x => x.Email.ToLower() == email.ToLower());

@@ -36,6 +36,46 @@ public class InvoicesController(AppDbContext db) : ControllerBase
         return Ok(categories);
     }
 
+    [HttpPost("categories")]
+    public async Task<ActionResult<Category>> CreateCategory(CategoryCreateDto dto)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var category = new Category
+        {
+            Name = dto.Name,
+            UserId = userId
+        };
+
+        db.Categories.Add(category);
+        await db.SaveChangesAsync();
+
+        return Ok(category);
+    }
+
+    [HttpDelete("categories/{id:int}")]
+    public async Task<ActionResult> DeleteCategory(int id)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+        var category = await db.Categories.FindAsync(id);
+        
+        if (category == null) return NotFound();
+
+        // Prevent deletion of global categories (UserId == null) or other users' categories
+        if (category.UserId != userId)
+        {
+            return Forbid();
+        }
+
+        db.Categories.Remove(category);
+        await db.SaveChangesAsync();
+
+        return Ok();
+    }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Invoice>>> Get(
         [FromQuery] int? supplierId,
@@ -71,12 +111,29 @@ public class InvoicesController(AppDbContext db) : ControllerBase
     public async Task<ActionResult<Invoice>> GetOne(int id)
     {
         var invoice = await db.Invoices
+            .AsNoTracking()
             .Include(i => i.Supplier)
             .Include(i => i.Items)
+            .ThenInclude(item => item.Category)
             .FirstOrDefaultAsync(i => i.Id == id);
 
-        if (invoice is null) return NotFound();
+        if (invoice is null)
+        {
+            return NotFound();
+        }
+
         return invoice;
+    }
+
+    [HttpGet("debug")]
+    public async Task<IActionResult> DebugData()
+    {
+        var invoicesCount = await db.Invoices.CountAsync();
+        var itemsCount = await db.InvoiceItems.CountAsync();
+        var itemsData = await db.InvoiceItems.Select(x => new { x.Id, x.CategoryId, x.Price, x.Quantity }).Take(10).ToListAsync();
+        var categories = await db.Categories.Select(c => new {c.Id, c.Name}).ToListAsync();
+
+        return Ok(new { invoicesCount, itemsCount, itemsData, categories });
     }
 
     [HttpPost]
@@ -184,7 +241,7 @@ public class InvoicesController(AppDbContext db) : ControllerBase
         return NoContent();
     }
 
-    [HttpGet("{summary}")]
+    [HttpGet("summary/months")]
     public async Task<ActionResult<IEnumerable<MonthSummaryDto>>> SummaryByYear(
         [FromQuery, Range(1, 9999)] int year,
         [FromQuery] int? supplierId

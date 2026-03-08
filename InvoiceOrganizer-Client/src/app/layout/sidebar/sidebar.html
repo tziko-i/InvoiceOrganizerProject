@@ -28,10 +28,10 @@
   </div>
 
   <div class="user-profile">
-    <div class="user-avatar">YB</div>
+    <div class="user-avatar">{{ userInitials }}</div>
     <div class="user-info">
-      <span class="name">ישראל ישראלי</span>
-      <span class="role">מנהל מערכת</span>
+      <span class="name">{{ userProfile?.fullName || 'משתמש' }}</span>
+      <span class="role">{{ userProfile?.email || 'אין אימייל' }}</span>
     </div>
   </div>
 </nav>

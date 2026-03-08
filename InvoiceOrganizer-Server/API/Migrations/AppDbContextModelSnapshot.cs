@@ -34,7 +34,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
 
                     b.HasData(
                         new
@@ -125,7 +125,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("API.Entities.InvoiceItem", b =>
@@ -156,7 +156,7 @@ namespace API.Migrations
 
                     b.HasIndex("InvoiceId");
 
-                    b.ToTable("InvoiceItems", (string)null);
+                    b.ToTable("InvoiceItems");
                 });
 
             modelBuilder.Entity("API.Entities.Supplier", b =>
@@ -187,7 +187,9 @@ namespace API.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Suppliers", (string)null);
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Suppliers");
                 });
 
             modelBuilder.Entity("API.Entities.UploadedDocument", b =>
@@ -215,7 +217,7 @@ namespace API.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UploadedDocuments", (string)null);
+                    b.ToTable("UploadedDocuments");
                 });
 
             modelBuilder.Entity("API.Entities.Users", b =>
@@ -223,7 +225,15 @@ namespace API.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -238,13 +248,17 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("BLOB");
 
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Username")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", (string)null);
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("API.Entities.Category", b =>
@@ -292,6 +306,17 @@ namespace API.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("API.Entities.Supplier", b =>
+                {
+                    b.HasOne("API.Entities.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("API.Entities.UploadedDocument", b =>

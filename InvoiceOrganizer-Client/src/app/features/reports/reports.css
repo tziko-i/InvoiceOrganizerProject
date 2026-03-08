@@ -42,8 +42,8 @@
     /* Pure white base (removed the diagonal blueish effect and shadow) */
     background: rgba(255, 255, 255, 1) !important;
     border-radius: 24px !important;
-    /* Dark green glossy border for large cards */
-    border: 2px solid #064e3b !important;
+    /* Thicker, prominent vibrant green border for large cards */
+    border: 3px solid #22c55e !important;
     
     /* Removed shadow per user request */
     box-shadow: none !important;
@@ -86,7 +86,7 @@
     -webkit-box-shadow: none !important;
     -moz-box-shadow: none !important;
     filter: none !important;
-    border-color: #047857 !important; /* Brighter green reflection on hover */
+    border-color: #16a34a !important; /* Slightly darker green on hover for interaction */
     /* Pure white base on hover */
     background: rgba(255, 255, 255, 1) !important;
 }

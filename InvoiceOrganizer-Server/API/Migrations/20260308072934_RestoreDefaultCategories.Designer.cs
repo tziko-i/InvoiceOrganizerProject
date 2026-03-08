@@ -11,14 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20251117094440_AddInvoiceTotal")]
-    partial class AddInvoiceTotal
+    [Migration("20260308072934_RestoreDefaultCategories")]
+    partial class RestoreDefaultCategories
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.11");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.13");
 
             modelBuilder.Entity("API.Entities.Category", b =>
                 {
@@ -30,14 +30,71 @@ namespace API.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UserId")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "ציוד משרדי"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "מזון וכיבוד"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "חשמל ואלקטרוניקה"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "תחזוקה וניקיון"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "שונות"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "office"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "food"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "electric"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "cleaning"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "maintenance"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "others"
+                        });
                 });
 
             modelBuilder.Entity("API.Entities.Invoice", b =>
@@ -61,8 +118,9 @@ namespace API.Migrations
                     b.Property<decimal>("Total")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -126,8 +184,9 @@ namespace API.Migrations
                     b.Property<int>("SupNum")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -136,11 +195,50 @@ namespace API.Migrations
                     b.ToTable("Suppliers");
                 });
 
-            modelBuilder.Entity("API.Entities.Users", b =>
+            modelBuilder.Entity("API.Entities.UploadedDocument", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("OcrStatus")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UploadedDocuments");
+                });
+
+            modelBuilder.Entity("API.Entities.Users", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAdmin")
                         .HasColumnType("INTEGER");
@@ -152,6 +250,10 @@ namespace API.Migrations
                     b.Property<byte[]>("PasswordSalt")
                         .IsRequired()
                         .HasColumnType("BLOB");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -166,9 +268,7 @@ namespace API.Migrations
                 {
                     b.HasOne("API.Entities.Users", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -212,6 +312,17 @@ namespace API.Migrations
                 });
 
             modelBuilder.Entity("API.Entities.Supplier", b =>
+                {
+                    b.HasOne("API.Entities.Users", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("API.Entities.UploadedDocument", b =>
                 {
                     b.HasOne("API.Entities.Users", "User")
                         .WithMany()

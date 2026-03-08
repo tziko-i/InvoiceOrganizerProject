@@ -146,8 +146,19 @@ export class Reports implements OnInit {
   }
 
   updateCategoryChart(categories: any[]) {
-      const labels = categories.map(x => x.categoryName || 'אחר');
-      const data = categories.map(x => x.total);
+      let labels = [];
+      let data = [];
+      let bgColors = [];
+
+      if (!categories || categories.length === 0) {
+          labels = ['אין הוצאות מקוטלגות'];
+          data = [1];
+          bgColors = ['#e2e8f0']; // Grey color for empty state
+      } else {
+          labels = categories.map(c => c.categoryName || 'אחר');
+          data = categories.map(c => c.total || 0);
+          bgColors = ['#3b82f6', '#a855f7', '#ec4899', '#22c55e', '#f59e0b'];
+      }
 
       this.categoryData = {
           ...this.categoryData,
@@ -155,9 +166,7 @@ export class Reports implements OnInit {
           datasets: [{
               ...this.categoryData.datasets[0],
               data: data,
-              // נוודא שיש מספיק צבעים
-              backgroundColor: ['#3b82f6', '#a855f7', '#ec4899', '#22c55e', '#f59e0b', '#6366f1', '#14b8a6'],
-              hoverBackgroundColor: ['#60a5fa', '#c084fc', '#f472b6', '#4ade80', '#fbbf24', '#818cf8', '#2dd4bf']
+              backgroundColor: bgColors
           }]
       };
   }

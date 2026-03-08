@@ -127,31 +127,40 @@
         </p-card>
       </div>
 
-      <!-- Category Chart -->
-      <div class="col-12 lg:col-6 mb-4 lg:mb-0">
-        <p-card styleClass="premium-card h-full" header="התפלגות הוצאות">
-          <div class="flex justify-content-center align-items-center h-full py-4">
-            <p-chart
-              type="doughnut"
-              [data]="categoryData"
-              [options]="categoryOptions"
-              height="350px"
-            ></p-chart>
+      <!-- Bottom Charts Row (Flex layout for consistent gap) -->
+      <div class="col-12">
+        <div class="flex flex-column lg:flex-row gap-4">
+          
+          <!-- Category Chart -->
+          <div class="flex-1 w-full">
+            <p-card styleClass="premium-card h-full w-full" header="התפלגות הוצאות">
+              <div class="flex justify-content-center align-items-center h-full py-4">
+                <p-chart
+                  type="doughnut"
+                  [data]="categoryData"
+                  [options]="categoryOptions"
+                  width="100%"
+                  height="350px"
+                  [style]="{'display': 'flex', 'justify-content': 'center', 'width': '100%'}"
+                ></p-chart>
+              </div>
+            </p-card>
           </div>
-        </p-card>
-      </div>
 
-      <!-- Top Vendors Chart -->
-      <div class="col-12 lg:col-6">
-        <p-card styleClass="premium-card h-full" header="ספקים עיקריים">
-          <p class="text-gray-400 mb-2 text-sm px-3">חמשת הספקים עם ההוצאה המצטברת הגבוהה ביותר</p>
-          <p-chart
-            type="bar"
-            [data]="topVendorsData"
-            [options]="topVendorsOptions"
-            height="350px"
-          ></p-chart>
-        </p-card>
+          <!-- Top Vendors Chart -->
+          <div class="flex-1 w-full">
+            <p-card styleClass="premium-card h-full w-full" header="ספקים עיקריים">
+              <p class="text-gray-400 mb-2 text-sm px-3">חמשת הספקים עם ההוצאה המצטברת הגבוהה ביותר</p>
+              <p-chart
+                type="bar"
+                [data]="topVendorsData"
+                [options]="topVendorsOptions"
+                height="350px"
+              ></p-chart>
+            </p-card>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>

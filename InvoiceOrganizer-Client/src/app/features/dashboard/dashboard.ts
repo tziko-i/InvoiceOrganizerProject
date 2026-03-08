@@ -112,17 +112,26 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // פונקציית עזר לעיבוד קטגוריות (מותאם ל-CategorySummaryDto)
   processCategoryData(summaryData: any[]) {
-      // summaryData מגיע כבר מסוכם מהשרת
-      const labels = summaryData.map(x => x.categoryName || 'אחר');
-      const data = summaryData.map(x => x.total);
+      let labels = [];
+      let data = [];
+      let bgColors = [];
+
+      if (!summaryData || summaryData.length === 0) {
+          labels = ['אין הוצאות מקוטלגות'];
+          data = [1];
+          bgColors = ['#e2e8f0']; // Grey color for empty state
+      } else {
+          labels = summaryData.map(x => x.categoryName || 'אחר');
+          data = summaryData.map(x => x.total);
+          bgColors = ['#6366f1', '#f43f5e', '#f59e0b', '#10b981', '#a855f7', '#3b82f6'];
+      }
 
       this.categoryChart = {
           labels: labels,
           datasets: [{
               data: data,
-              backgroundColor: ['#6366f1', '#f43f5e', '#f59e0b', '#10b981', '#a855f7', '#3b82f6'],
+              backgroundColor: bgColors,
               hoverOffset: 15,
               borderRadius: 10
           }]

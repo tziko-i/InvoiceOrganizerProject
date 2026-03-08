@@ -10,4 +10,9 @@ public class Users
     public required byte[] PasswordHash { get; set; }
     public required byte[] PasswordSalt { get; set; }
     public bool IsAdmin { get; set; } = false;
+    
+    // Profile Fields
+    public string FullName { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Address { get; set; } = "";
 }
