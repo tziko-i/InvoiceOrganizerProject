@@ -34,7 +34,7 @@ import * as FileSaver from 'file-saver';
 })
 export class DashboardComponent implements OnInit {
   
- 
+  isLoading: boolean = true;
   expenses: Expense[] = [];
   expenseTrendChart: any;
   expenseTrendOptions: any;
@@ -105,10 +105,16 @@ export class DashboardComponent implements OnInit {
             
             // 3. עדכון גרף המגמה (אם הנתונים מגיעים מהשרת)
             this.updateTrendChart(response.invoices);
+            
+            this.isLoading = false;
             // כאן אנחנו קוראים לו כדי לפתור את השגיאה:
-          this.cd.detectChanges();
+            this.cd.detectChanges();
         },
-        error: (err) => console.error("שגיאה בטעינת נתונים", err)
+        error: (err) => {
+            console.error("שגיאה בטעינת נתונים", err);
+            this.isLoading = false;
+            this.cd.detectChanges();
+        }
     });
   }
 

@@ -154,6 +154,12 @@
     font-weight: 500;
   }
   
+  .category-name {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  
   /* Animations */
   @keyframes fadeInDown {
     from {

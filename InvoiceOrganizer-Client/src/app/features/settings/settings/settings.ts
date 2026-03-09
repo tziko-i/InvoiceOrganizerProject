@@ -12,6 +12,7 @@ import { ListboxModule } from 'primeng/listbox';
 import { DialogModule } from 'primeng/dialog';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-settings',
@@ -26,7 +27,8 @@ import { MessageService } from 'primeng/api';
     DividerModule,
     ListboxModule,
     DialogModule,
-    ToastModule
+    ToastModule,
+    TagModule
   ],
   providers: [MessageService],
   templateUrl: './settings.html',
