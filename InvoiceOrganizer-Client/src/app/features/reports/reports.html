@@ -8,13 +8,16 @@
       <p>מבט על הביצועים הפיננסים שלך</p>
     </div>
     <div class="flex gap-3 mt-3 md:mt-0">
-      <p-datepicker
-        [(ngModel)]="dateRange"
-        selectionMode="range"
-        [readonlyInput]="true"
-        placeholder="סינון לפי תאריך"
-        styleClass="premium-calendar"
-      ></p-datepicker>
+      <span class="p-input-icon-left custom-date-filter">
+        <i class="pi pi-calendar" style="color: #64748b; z-index: 2;"></i>
+        <p-datepicker
+          [(ngModel)]="dateRange"
+          selectionMode="range"
+          [readonlyInput]="true"
+          placeholder="סינון לפי תאריך"
+          styleClass="premium-calendar"
+        ></p-datepicker>
+      </span>
       <p-button
         label="Excel"
         icon="pi pi-file-excel"

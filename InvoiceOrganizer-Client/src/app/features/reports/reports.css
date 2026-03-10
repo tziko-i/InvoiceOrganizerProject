@@ -144,9 +144,12 @@
 }
 
 .kpi-icon-wrapper {
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 16px;
+    width: 2.25rem;
+    height: 2.25rem;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+    flex-shrink: 0; /* Prevents the box from getting squished by long text */
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -154,21 +157,81 @@
     border: 1px solid #e2e8f0;
 }
 
-/* Custom Component Overrides for Light Mode */
+/* Premium Calendar Input Customization */
+.custom-date-filter {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.custom-date-filter i {
+    position: absolute;
+    left: 1rem !important; /* Move icon safely inside */
+    font-size: 1.1rem;
+    pointer-events: none;
+    z-index: 10;
+}
+
+::ng-deep .custom-date-filter .p-datepicker {
+    width: 260px; /* Thicker and substantial width */
+}
+
+::ng-deep .custom-date-filter .p-inputtext {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #1e293b !important;
+    border-radius: 999px !important; /* Pill shaped */
+    padding: 0.85rem 1rem 0.85rem 3rem !important; /* Space for the left icon */
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    width: 100%;
+}
+
+::ng-deep .custom-date-filter .p-inputtext:hover {
+    border-color: #94a3b8 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+::ng-deep .custom-date-filter .p-inputtext:focus {
+    border-color: #4f46e5 !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+}
+
+/* Calendar Panel Styling */
 ::ng-deep .p-datepicker {
     background: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
     color: #1e293b !important;
+    padding: 0.5rem !important;
 }
 
 ::ng-deep .p-datepicker .p-datepicker-header {
-    background: #f8fafc !important;
-    color: #1e293b !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    background: transparent !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding: 0.5rem 0 !important;
+    font-weight: 600 !important;
 }
 
 ::ng-deep .p-datepicker table td > span {
+    border-radius: 50% !important;
     color: #475569 !important;
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+    transition: all 0.2s;
+}
+
+::ng-deep .p-datepicker table td > span.p-highlight {
+    background: #4f46e5 !important;
+    color: #ffffff !important;
+}
+
+::ng-deep .p-datepicker table td.p-datepicker-today > span {
+    background: #e0e7ff !important;
+    color: #4338ca !important;
 }
 
 ::ng-deep .p-dropdown, ::ng-deep .p-multiselect {
