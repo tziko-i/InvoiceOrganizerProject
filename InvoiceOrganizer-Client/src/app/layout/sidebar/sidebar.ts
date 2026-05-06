@@ -1,7 +1,8 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Router, NavigationEnd, RouterLink, RouterLinkActive } from '@angular/router';
+import { filter, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sidebar',
@@ -10,41 +11,73 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css'
 })
-export class SidebarComponent implements OnInit {
+export class SidebarComponent implements OnInit, OnDestroy {
   private router = inject(Router);
   private http = inject(HttpClient);
+  private cd = inject(ChangeDetectorRef);
+  private routerSubscription?: Subscription;
 
   userProfile: any = null;
   userInitials: string = '';
+  private currentToken: string | null = null;
 
   ngOnInit() {
     this.loadUserProfile();
+
+    // האזנה לניווטים (למשל כאשר עוברים לעמוד אחרי התחברות)
+    this.routerSubscription = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.loadUserProfile();
+    });
+  }
+
+  ngOnDestroy() {
+    if (this.routerSubscription) {
+      this.routerSubscription.unsubscribe();
+    }
   }
 
   loadUserProfile() {
     const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        const loggedUser = JSON.parse(userStr);
-        // Fallback initials until API responds or if it fails
-        this.userInitials = this.getInitials(loggedUser.username || '?');
+    if (!userStr) {
+      this.userProfile = null;
+      this.userInitials = '';
+      this.currentToken = null;
+      return;
+    }
 
-        const headers = { 'Authorization': `Bearer ${loggedUser.token}` };
-        this.http.get('http://localhost:5042/api/account/profile', { headers })
-          .subscribe({
-            next: (profile: any) => {
-              this.userProfile = profile;
-              this.userInitials = this.getInitials(profile.fullName || profile.email || loggedUser.username || '?');
-            },
-            error: (err) => {
-              console.error('Failed to load user profile in sidebar', err);
-              // Keeps the fallback username
-              this.userProfile = { fullName: loggedUser.username }; 
-            }
-          });
-      } catch (e) {
-        console.error('Error parsing user token:', e);
+    try {
+      const loggedUser = JSON.parse(userStr);
+      
+      // אין צורך למשוך שוב מהשרת אם כבר טענו עבור הטוקן הזה
+      if (this.currentToken === loggedUser.token && this.userProfile) {
+        return;
       }
+      
+      this.currentToken = loggedUser.token;
+
+      // Fallback initials until API responds or if it fails
+      this.userInitials = this.getInitials(loggedUser.username || '?');
+
+      const headers = { 'Authorization': `Bearer ${loggedUser.token}` };
+      this.http.get('http://localhost:5042/api/account/profile', { headers })
+        .subscribe({
+          next: (profile: any) => {
+            this.userProfile = profile;
+            this.userInitials = this.getInitials(profile.fullName || profile.email || loggedUser.username || '?');
+            this.cd.detectChanges();
+          },
+          error: (err) => {
+            console.error('Failed to load user profile in sidebar', err);
+            // Keeps the fallback username
+            this.userProfile = { fullName: loggedUser.username }; 
+            this.currentToken = null; // נאפשר ניסיון חוזר בהמשך
+            this.cd.detectChanges();
+          }
+        });
+    } catch (e) {
+      console.error('Error parsing user token:', e);
     }
   }
 

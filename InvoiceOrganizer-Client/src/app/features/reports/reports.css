@@ -129,10 +129,30 @@
 
 /* Removed old top bar (::before) element */
 
+/* --- KPI Layout Fixes --- */
+.kpi-layout {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    min-height: 85px; /* מונע מהקופסה לקטון מדי */
+    min-width: 0;
+    width: 100%;
+}
+
+.kpi-text-container {
+    padding-left: 3.5rem; /* שומר מקום בטוח בצד שמאל עבור האייקון */
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+}
+
 .kpi-value {
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #0f172a;
+    line-height: 1.2;
+    margin-top: 0.25rem;
 }
 
 .kpi-label {
@@ -146,17 +166,18 @@
 .kpi-icon-wrapper {
     width: 2.25rem;
     height: 2.25rem;
-    min-width: 2.25rem;
-    min-height: 2.25rem;
-    flex-shrink: 0; /* Prevents the box from getting squished by long text */
     border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: #f1f5f9;
     border: 1px solid #e2e8f0;
+    
+    /* הופך את האייקון למקובע לחלוטין לקצה השמאלי העליון */
+    position: absolute;
+    left: 0;
+    top: 0;
 }
-
 /* Premium Calendar Input Customization */
 .custom-date-filter {
     position: relative;

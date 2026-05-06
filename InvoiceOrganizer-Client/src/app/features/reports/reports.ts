@@ -9,7 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { DatePickerModule } from 'primeng/datepicker';
 import { TableModule } from 'primeng/table';
 
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { ChangeDetectorRef, inject } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import * as ExcelJS from 'exceljs';
@@ -60,18 +60,37 @@ export class Reports implements OnInit {
     this.fetchData();
   }
 
-  fetchData() {
-    const userStr = localStorage.getItem("user");
-    if (!userStr) {
-        console.error('No user found in localStorage');
-        return;
+  onDateChange() {
+    if (this.dateRange && this.dateRange[0] && this.dateRange[1]) {
+        this.fetchData();
+    } else if (!this.dateRange || this.dateRange.length === 0 || !this.dateRange[0]) {
+        this.fetchData();
     }
-    const loggedUser = JSON.parse(userStr);
-    const headers = { 'Authorization': `Bearer ${loggedUser.token}` };
+  }
 
+  fetchData() {
+    let paramsInvoices = new HttpParams();
+    let paramsCategory = new HttpParams();
+
+    if (this.dateRange && this.dateRange[0] && this.dateRange[1]) {
+        const start = this.dateRange[0];
+        const end = this.dateRange[1];
+        
+        // Fix timezone offset issue before formatting
+        const localStart = new Date(start.getTime() - (start.getTimezoneOffset() * 60000));
+        const localEnd = new Date(end.getTime() - (end.getTimezoneOffset() * 60000));
+        
+        const fromStr = localStart.toISOString().split('T')[0];
+        const toStr = localEnd.toISOString().split('T')[0];
+
+        paramsInvoices = paramsInvoices.set('fromDate', fromStr).set('toDate', toStr);
+        paramsCategory = paramsCategory.set('from', fromStr).set('to', toStr);
+    }
+
+    // Rely on interceptor for Authorization headers
     forkJoin({
-        invoices: this.http.get<any[]>("http://localhost:5042/api/Invoices", { headers }),
-        categorySummary: this.http.get<any[]>("http://localhost:5042/api/Invoices/summary/by-category", { headers })
+        invoices: this.http.get<any[]>("http://localhost:5042/api/Invoices", { params: paramsInvoices }),
+        categorySummary: this.http.get<any[]>("http://localhost:5042/api/Invoices/summary/by-category", { params: paramsCategory })
     }).subscribe({
         next: (response) => {
             console.log('Reports Data:', response);
@@ -148,25 +167,49 @@ export class Reports implements OnInit {
   updateCategoryChart(categories: any[]) {
       let labels = [];
       let data = [];
-      let bgColors = [];
+      let bgColors: string[] = [];
 
       if (!categories || categories.length === 0) {
           labels = ['אין הוצאות מקוטלגות'];
           data = [1];
           bgColors = ['#e2e8f0']; // Grey color for empty state
       } else {
-          labels = categories.map(c => c.categoryName || 'אחר');
-          data = categories.map(c => c.total || 0);
-          bgColors = ['#3b82f6', '#a855f7', '#ec4899', '#22c55e', '#f59e0b'];
+          const sortedData = [...categories].sort((a, b) => b.total - a.total);
+          
+          const baseColors = [
+              '#3b82f6', '#a855f7', '#ec4899', '#22c55e', 
+              '#f59e0b', '#6366f1', '#f43f5e', '#14b8a6', 
+              '#f97316', '#8b5cf6', '#06b6d4', '#84cc16'
+          ];
+          
+          if (sortedData.length > baseColors.length) {
+              const maxCategories = baseColors.length - 1;
+              const topCategories = sortedData.slice(0, maxCategories);
+              const otherCategories = sortedData.slice(maxCategories);
+              const othersTotal = otherCategories.reduce((sum, item) => sum + item.total, 0);
+              
+              labels = topCategories.map(x => x.categoryName || 'אחר');
+              labels.push('אחרים');
+              
+              data = topCategories.map(x => x.total);
+              data.push(othersTotal);
+              
+              bgColors = topCategories.map((_, i) => baseColors[i]);
+              bgColors.push(baseColors[baseColors.length - 1]);
+          } else {
+              labels = sortedData.map(x => x.categoryName || 'אחר');
+              data = sortedData.map(x => x.total);
+              bgColors = sortedData.map((_, i) => baseColors[i]);
+          }
       }
 
       this.categoryData = {
-          ...this.categoryData,
           labels: labels,
           datasets: [{
-              ...this.categoryData.datasets[0],
               data: data,
-              backgroundColor: bgColors
+              backgroundColor: bgColors,
+              hoverOffset: 15,
+              borderWidth: 0
           }]
       };
   }
@@ -202,10 +245,10 @@ export class Reports implements OnInit {
 
   initCharts() {
     const documentStyle = getComputedStyle(document.documentElement);
-    // Dark mode specific colors
-    const textColor = '#e2e8f0'; // slate-200
+    // Dark mode specific colors (changed to light mode for visibility)
+    const textColor = '#1e293b'; // slate-800 for visibility on white background
     const textColorSecondary = '#64748b'; // slate-500
-    const surfaceBorder = 'rgba(255, 255, 255, 0.1)';
+    const surfaceBorder = 'rgba(0, 0, 0, 0.1)';
 
     // 1. Monthly Trends (Line Chart)
     this.monthlyTrendData = {

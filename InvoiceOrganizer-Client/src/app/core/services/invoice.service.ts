@@ -63,7 +63,7 @@ export class InvoiceService {
       date: backendInvoice.invoiceDate,
       amount: backendInvoice.total,
       currency: 'ILS', // Default as backend doesn't seem to have currency
-      category: 'General', // List endpoint doesn't return items to deduce category
+      category: backendInvoice.items && backendInvoice.items.length > 0 && backendInvoice.items[0].category ? backendInvoice.items[0].category.name : 'כללי', // Uses actual category now
       status: InvoiceStatus.Verified, // Default as backend doesn't have status
       confidence: 1,
       month: backendInvoice.invoiceDate ? backendInvoice.invoiceDate.split('-')[1] : '',

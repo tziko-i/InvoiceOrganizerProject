@@ -16,6 +16,7 @@
           [readonlyInput]="true"
           placeholder="סינון לפי תאריך"
           styleClass="premium-calendar"
+          (ngModelChange)="onDateChange()"
         ></p-datepicker>
       </span>
       <p-button
@@ -45,10 +46,10 @@
       <!-- Total Spend -->
       <div>
         <p-card styleClass="premium-card kpi-card" [style]="{ '--kpi-color': '#3b82f6' }">
-          <div class="flex justify-between items-start">
-            <div>
+          <div class="kpi-layout">
+            <div class="kpi-text-container">
               <span class="block kpi-label mb-2">סה"כ הוצאות</span>
-              <div class="kpi-value">{{ totalSpend | currency: 'ILS' : 'symbol' : '1.0-0' }}</div>
+              <div class="kpi-value" [title]="totalSpend">{{ totalSpend | currency: 'ILS' : 'symbol' : '1.0-0' }}</div>
               <div class="text-green-400 text-sm mt-2 font-bold flex items-center gap-1">
                 <i class="pi pi-arrow-up text-xs"></i> 2.5% מהחודש שעבר
               </div>
@@ -63,10 +64,10 @@
       <!-- Monthly Average -->
       <div>
         <p-card styleClass="premium-card kpi-card" [style]="{ '--kpi-color': '#a855f7' }">
-          <div class="flex justify-between items-start">
-            <div>
+          <div class="kpi-layout">
+            <div class="kpi-text-container">
               <span class="block kpi-label mb-2">ממוצע חודשי</span>
-              <div class="kpi-value">{{ monthlyAverage | currency: 'ILS' : 'symbol' : '1.0-0' }}</div>
+              <div class="kpi-value" [title]="monthlyAverage">{{ monthlyAverage | currency: 'ILS' : 'symbol' : '1.0-0' }}</div>
               <div class="text-gray-400 text-sm mt-2">מחושב שנתית</div>
             </div>
             <div class="kpi-icon-wrapper">
@@ -79,10 +80,10 @@
       <!-- Top Category -->
       <div>
         <p-card styleClass="premium-card kpi-card" [style]="{ '--kpi-color': '#ec4899' }">
-          <div class="flex justify-between items-start">
-            <div>
+          <div class="kpi-layout">
+            <div class="kpi-text-container">
               <span class="block kpi-label mb-2">קטגוריה מובילה</span>
-              <div class="kpi-value text-xl">{{ topCategory }}</div>
+              <div class="kpi-value text-xl" [title]="topCategory">{{ topCategory }}</div>
               <div class="text-pink-400 text-sm mt-2 font-bold">
                 {{ 1250 | currency: 'ILS' : 'symbol' : '1.0-0' }}
               </div>
@@ -97,10 +98,10 @@
       <!-- Savings -->
       <div>
         <p-card styleClass="premium-card kpi-card" [style]="{ '--kpi-color': '#22c55e' }">
-          <div class="flex justify-between items-start">
-            <div>
+          <div class="kpi-layout">
+            <div class="kpi-text-container">
               <span class="block kpi-label mb-2">חיסכון משוער</span>
-              <div class="kpi-value">{{ savings | currency: 'ILS' : 'symbol' : '1.0-0' }}</div>
+              <div class="kpi-value" [title]="savings">{{ savings | currency: 'ILS' : 'symbol' : '1.0-0' }}</div>
               <div class="text-green-400 text-sm mt-2 flex items-center gap-1">
                 <i class="pi pi-check-circle text-xs"></i> מצב מצוין
               </div>
@@ -112,7 +113,6 @@
         </p-card>
       </div>
     </div>
-
     <!-- Main Charts -->
     <div class="grid p-fluid">
       <!-- Monthly Trend -->

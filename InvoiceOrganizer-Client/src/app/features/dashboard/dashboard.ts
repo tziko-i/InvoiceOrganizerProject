@@ -93,7 +93,7 @@ export class DashboardComponent implements OnInit {
                 vendor: inv.vendorName || inv.supplier?.name || 'ספק כללי',
                 logo: inv.logoUrl || '',
                 icon: inv.icon || '',
-                category: inv.category || '',
+                category: inv.items && inv.items.length > 0 && inv.items[0].category ? inv.items[0].category.name : 'כללי',
                 date: inv.invoiceDate,
                 amount: inv.total,
                 status: (inv.status?.toLowerCase() as 'approved' | 'pending' | 'rejected') || 'pending'
@@ -121,16 +121,40 @@ export class DashboardComponent implements OnInit {
   processCategoryData(summaryData: any[]) {
       let labels = [];
       let data = [];
-      let bgColors = [];
+      let bgColors: string[] = [];
 
       if (!summaryData || summaryData.length === 0) {
           labels = ['אין הוצאות מקוטלגות'];
           data = [1];
           bgColors = ['#e2e8f0']; // Grey color for empty state
       } else {
-          labels = summaryData.map(x => x.categoryName || 'אחר');
-          data = summaryData.map(x => x.total);
-          bgColors = ['#6366f1', '#f43f5e', '#f59e0b', '#10b981', '#a855f7', '#3b82f6'];
+          const sortedData = [...summaryData].sort((a, b) => b.total - a.total);
+          
+          const baseColors = [
+              '#6366f1', '#f43f5e', '#f59e0b', '#10b981', 
+              '#a855f7', '#3b82f6', '#ec4899', '#14b8a6', 
+              '#f97316', '#8b5cf6', '#06b6d4', '#84cc16'
+          ];
+          
+          if (sortedData.length > baseColors.length) {
+              const maxCategories = baseColors.length - 1;
+              const topCategories = sortedData.slice(0, maxCategories);
+              const otherCategories = sortedData.slice(maxCategories);
+              const othersTotal = otherCategories.reduce((sum, item) => sum + item.total, 0);
+              
+              labels = topCategories.map(x => x.categoryName || 'אחר');
+              labels.push('אחרים');
+              
+              data = topCategories.map(x => x.total);
+              data.push(othersTotal);
+              
+              bgColors = topCategories.map((_, i) => baseColors[i]);
+              bgColors.push(baseColors[baseColors.length - 1]);
+          } else {
+              labels = sortedData.map(x => x.categoryName || 'אחר');
+              data = sortedData.map(x => x.total);
+              bgColors = sortedData.map((_, i) => baseColors[i]);
+          }
       }
 
       this.categoryChart = {
