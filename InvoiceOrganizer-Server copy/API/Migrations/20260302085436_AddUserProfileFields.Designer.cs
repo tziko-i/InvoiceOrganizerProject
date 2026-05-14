@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,12 +11,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260302085436_AddUserProfileFields")]
+    partial class AddUserProfileFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.16");
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.13");
 
             modelBuilder.Entity("API.Entities.Category", b =>
                 {
@@ -35,63 +38,6 @@ namespace API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "ציוד משרדי"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "מזון וכיבוד"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "חשמל ואלקטרוניקה"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "תחזוקה וניקיון"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "שונות"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "office"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "food"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "electric"
-                        },
-                        new
-                        {
-                            Id = 9,
-                            Name = "cleaning"
-                        },
-                        new
-                        {
-                            Id = 10,
-                            Name = "maintenance"
-                        },
-                        new
-                        {
-                            Id = 11,
-                            Name = "others"
-                        });
                 });
 
             modelBuilder.Entity("API.Entities.Invoice", b =>
@@ -227,9 +173,6 @@ namespace API.Migrations
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<decimal>("Budget")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")

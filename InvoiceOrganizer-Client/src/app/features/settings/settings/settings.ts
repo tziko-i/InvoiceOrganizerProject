@@ -57,7 +57,8 @@ export class Settings implements OnInit {
       fullName: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', []],
-      address: ['', []]
+      address: ['', []],
+      budget: [0, [Validators.min(0)]]
     });
   }
 
@@ -69,7 +70,8 @@ export class Settings implements OnInit {
           fullName: data.fullName || '',
           email: data.email || '',
           phone: data.phone || '',
-          address: data.address || ''
+          address: data.address || '',
+          budget: data.budget || 0
         });
       },
       error: (err) => {
@@ -82,7 +84,8 @@ export class Settings implements OnInit {
   loadTypes() {
     this.http.get('http://localhost:5042/api/invoices/categories', { headers: this.getAuthHeaders() }).subscribe({
       next: (data: any) => {
-        this.categories = data;
+        // סינון קטגוריות ברירת מחדל כדי להציג רק את הקטגוריות האישיות של המשתמש
+        this.categories = data.filter((cat: any) => cat.userId);
       },
       error: (err) => {
         console.error('Failed to load categories', err);

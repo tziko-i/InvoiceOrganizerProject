@@ -90,14 +90,16 @@ export class Reports implements OnInit {
     // Rely on interceptor for Authorization headers
     forkJoin({
         invoices: this.http.get<any[]>("http://localhost:5042/api/Invoices", { params: paramsInvoices }),
-        categorySummary: this.http.get<any[]>("http://localhost:5042/api/Invoices/summary/by-category", { params: paramsCategory })
+        categorySummary: this.http.get<any[]>("http://localhost:5042/api/Invoices/summary/by-category", { params: paramsCategory }),
+        profile: this.http.get<any>("http://localhost:5042/api/account/profile")
     }).subscribe({
         next: (response) => {
             console.log('Reports Data:', response);
             
             if (response.invoices && response.invoices.length > 0) {
                 this.hasData = true;
-                this.processKPIs(response.invoices, response.categorySummary);
+                const budget = response.profile?.budget || 0;
+                this.processKPIs(response.invoices, response.categorySummary, budget);
                 this.updateMonthlyTrendChart(response.invoices);
                 this.updateCategoryChart(response.categorySummary);
                 this.updateTopVendorsChart(response.invoices);
@@ -111,14 +113,20 @@ export class Reports implements OnInit {
     });
   }
 
-  processKPIs(invoices: any[], categories: any[]) {
+  processKPIs(invoices: any[], categories: any[], budget: number = 0) {
       // 1. Total Spend
       this.totalSpend = invoices.reduce((sum, inv) => sum + (inv.total || 0), 0);
 
-      // 2. Monthly Average (simple calc based on unique months found or just 12?)
-      // נחשב ממוצע לפי מספר החודשים שיש בהם נתונים בפועל
-      const uniqueMonths = new Set(invoices.map(inv => new Date(inv.invoiceDate).getMonth() + '-' + new Date(inv.invoiceDate).getFullYear())).size;
-      this.monthlyAverage = uniqueMonths > 0 ? Math.round(this.totalSpend / uniqueMonths) : 0;
+      // 2. Monthly Average & Savings Timeframe
+      // נחשב את מספר החודשים לפי טווח התאריכים שנבחר. אם לא נבחר טווח - נניח ברירת מחדל של שנה (12 חודשים)
+      let monthsCount = 12; 
+      if (this.dateRange && this.dateRange[0] && this.dateRange[1]) {
+          const start = this.dateRange[0];
+          const end = this.dateRange[1];
+          monthsCount = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+      }
+      
+      this.monthlyAverage = monthsCount > 0 ? Math.round(this.totalSpend / monthsCount) : 0;
 
       // 3. Top Category
       if (categories && categories.length > 0) {
@@ -126,8 +134,10 @@ export class Reports implements OnInit {
           this.topCategory = top.categoryName || 'Unknown';
       }
       
-      // 4. Savings (Placeholder logic: assume 20% savings target or just static for now)
-      this.savings = Math.round(this.totalSpend * 0.1); 
+      // 4. Savings
+      // Calculate savings based on budget minus actual spend
+      const totalBudgetForPeriod = budget * (monthsCount > 0 ? monthsCount : 1);
+      this.savings = Math.round(totalBudgetForPeriod - this.totalSpend); 
   }
 
   updateMonthlyTrendChart(invoices: any[]) {
@@ -135,9 +145,25 @@ export class Reports implements OnInit {
       const data: number[] = [];
       const today = new Date(); // תאריך נוכחי
   
-      // יצירת תוויות ונתונים ל-6 החודשים האחרונים (כולל הנוכחי)
-      for (let i = 5; i >= 0; i--) {
-          const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
+      let monthsCount = 12;
+      let startYear = today.getFullYear();
+      let startMonth = today.getMonth();
+
+      // אם נבחר טווח תאריכים, נחשב את מספר החודשים ונקודת ההתחלה
+      if (this.dateRange && this.dateRange[0] && this.dateRange[1]) {
+          const start = this.dateRange[0];
+          const end = this.dateRange[1];
+          monthsCount = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth()) + 1;
+          
+          // מתחילים מהתאריך המאוחר ביותר (end) והולכים אחורה monthsCount פעמים
+          startYear = end.getFullYear();
+          startMonth = end.getMonth();
+      }
+
+      // יצירת תוויות ונתונים לחודשים (החל מהחדש ביותר והולכים אחורה, אז נהפוך בסוף כדי להציג כרונולוגית)
+      // כדי להציג כרונולוגית מימין לשמאל (או משמאל לימין) נרוץ מהישן לחדש:
+      for (let i = monthsCount - 1; i >= 0; i--) {
+          const d = new Date(startYear, startMonth - i, 1);
           // שמות חודשים בעברית
           const monthName = d.toLocaleString('he-IL', { month: 'long' });
           labels.push(monthName);

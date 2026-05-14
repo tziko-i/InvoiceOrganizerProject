@@ -78,7 +78,6 @@ public class AccountController(AppDbContext context, ITokenService tokenService)
         user.Email = dto.Email ?? user.Email;
         user.Phone = dto.Phone ?? "";
         user.Address = dto.Address ?? "";
-        user.Budget = dto.Budget;
 
         await context.SaveChangesAsync();
 

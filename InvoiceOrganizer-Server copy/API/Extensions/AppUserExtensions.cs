@@ -18,8 +18,7 @@ public static class AppUserExtensions
             Token = tokenService.CreateToken(user),
             FullName = user.FullName,
             Phone = user.Phone,
-            Address = user.Address,
-            Budget = user.Budget
+            Address = user.Address
         };
     }
 

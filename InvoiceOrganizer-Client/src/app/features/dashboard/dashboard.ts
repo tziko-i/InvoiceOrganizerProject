@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit {
   expenseTrendOptions: any;
   categoryChart: any;
   categoryOptions: any;
+  budgetUtilization: number = 0;
  isSidebarOpen: any;
 
   private http = inject(HttpClient);
@@ -78,11 +79,16 @@ export class DashboardComponent implements OnInit {
     const headers = { 'Authorization': `Bearer ${loggedUser.token}` };
     console.log('Fetching data with token:', loggedUser.token.substring(0, 10) + '...'); // Debug: Token check
 
+    const today = new Date();
+    const fromDate = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+    const fromDateStr = `${fromDate.getFullYear()}-${String(fromDate.getMonth() + 1).padStart(2, '0')}-01`;
+
     // ביצוע שתי קריאות במקביל
     // api/InvoicesItem לא קיים - נשתמש ב-api/Invoices/summary/by-category
     forkJoin({
-        invoices: this.http.get<any[]>("http://localhost:5042/api/Invoices", { headers }),
-        categorySummary: this.http.get<any[]>("http://localhost:5042/api/Invoices/summary/by-category", { headers })
+        invoices: this.http.get<any[]>(`http://localhost:5042/api/Invoices?fromDate=${fromDateStr}`, { headers }),
+        categorySummary: this.http.get<any[]>(`http://localhost:5042/api/Invoices/summary/by-category?from=${fromDateStr}`, { headers }),
+        profile: this.http.get<any>("http://localhost:5042/api/account/profile", { headers })
     }).subscribe({
         next: (response) => {
             console.log('API Response received:', response); // Debug: API response
@@ -104,7 +110,16 @@ export class DashboardComponent implements OnInit {
             this.processCategoryData(response.categorySummary);
             
             // 3. עדכון גרף המגמה (אם הנתונים מגיעים מהשרת)
-            this.updateTrendChart(response.invoices);
+            const budget = response.profile?.budget || 0;
+            this.updateTrendChart(response.invoices, budget);
+            
+            if (budget > 0) {
+                const totalSpent = response.categorySummary.reduce((sum: number, cat: any) => sum + cat.total, 0);
+                const totalBudget = budget * 6; // Since the dashboard represents the last 6 months
+                this.budgetUtilization = Math.round((totalSpent / totalBudget) * 100);
+            } else {
+                this.budgetUtilization = 0;
+            }
             
             this.isLoading = false;
             // כאן אנחנו קוראים לו כדי לפתור את השגיאה:
@@ -168,11 +183,12 @@ export class DashboardComponent implements OnInit {
       };
   }
 
-  updateTrendChart(invoices: any[]) {
+  updateTrendChart(invoices: any[], budget: number = 0) {
     if (!invoices) return;
 
     const labels: string[] = [];
     const data: number[] = [];
+    const budgetData: number[] = [];
     const today = new Date();
 
     // Generate data for the last 6 months
@@ -191,6 +207,7 @@ export class DashboardComponent implements OnInit {
         }, 0);
 
         data.push(monthlyTotal);
+        budgetData.push(budget);
     }
 
     // Update the chart object (creating a new reference to trigger change detection in PrimeNG)
@@ -203,8 +220,10 @@ export class DashboardComponent implements OnInit {
                     ...this.expenseTrendChart.datasets[0],
                     data: data
                 },
-                // Preserve the budget/target line (second dataset)
-                this.expenseTrendChart.datasets[1]
+                {
+                    ...this.expenseTrendChart.datasets[1],
+                    data: budgetData
+                }
             ]
         };
     }

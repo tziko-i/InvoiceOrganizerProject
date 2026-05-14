@@ -14,6 +14,4 @@ public class UserUpdateDto
     public string Phone { get; set; } = "";
     
     public string Address { get; set; } = "";
-    
-    public decimal Budget { get; set; } = 0;
 }
